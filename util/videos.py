@@ -1,7 +1,7 @@
 import pafy
 import moviepy.editor as mpe
 
-from util.Files import VideoFile, AudioFile
+from util.files import VideoFile, AudioFile
 
 
 class Video:
