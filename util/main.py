@@ -1,12 +1,22 @@
 import pafy
 import moviepy.editor as mpe
 
-def print_hi(name):
-    # Use a breakpoint in the code line below to debug your script.
-    print(f'Hi, {name}')  # Press Ctrl+F8 to toggle the breakpoint.
-    video = pafy.new('https://www.youtube.com/watch?v=OFr74zI1LBM&ab_channel=LaCha%C3%AEnedesmemes')
-    video.getbestaudio().download(filepath='dick.mp3')
-    video.getbestvideo().download(filepath='dick.mp4')
+
+def generateVideo(videoId, cacheDir, outputDir):
+    video = pafy.new(videoId)
+    cachePath = cacheDir + video.title()
+    audioExtension = '.mp3'
+    videoExtension = '.mp4'
+    outputPath = outputDir + video.title() + videoExtension
+
+    downloadVideos(video, cachePath, audioExtension, videoExtension)
+    mergeClips(cachePath+videoExtension, cachePath+audioExtension, outputPath)
+
+
+def downloadVideos(video, path, audioExtension, videoExtension):
+    video.getbestaudio().download(filepath=path + audioExtension)
+    video.getbestvideo().download(filepath=path + videoExtension)
+
 
 def mergeClips(videoPath, audioPath, outputPath):
     videoClip = mpe.VideoFileClip(videoPath)
@@ -14,9 +24,4 @@ def mergeClips(videoPath, audioPath, outputPath):
     mergedClip = videoClip.set_audio(audioClip)
     mergedClip.write_videofile(outputPath)
 
-
-# Press the green button in the gutter to run the script.
-if __name__ == '__main__':
-    print_hi('PyCharm')
-
-# See PyCharm help at https://www.jetbrains.com/help/pycharm/
+# if __name__ == '__main__':
