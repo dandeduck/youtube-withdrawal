@@ -1,0 +1,4 @@
+pafy
+youtube-dl
+moviepy
+numpy==1.19.3
