@@ -13,23 +13,23 @@ class File:
 
 
 class FileBase(File):
-    directory = ''
-    name = ''
-    extension = ''
+    directoryStr = ''
+    nameStr = ''
+    extensionStr = ''
 
     def __init__(self, directory, name, extension):
-        self.directory = directory
-        self.name = name
-        self.extension = extension
+        self.directoryStr = directory
+        self.nameStr = name
+        self.extensionStr = extension
 
     def directory(self) -> str:
-        return self.directory
+        return self.directoryStr
 
     def name(self) -> str:
-        return self.name
+        return self.nameStr
 
     def extension(self) -> str:
-        return self.extension
+        return self.extensionStr
 
 
 class AudioFile(FileBase):
