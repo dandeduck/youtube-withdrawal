@@ -1,0 +1,3 @@
+pafy
+moviepy
+numpy==1.19
