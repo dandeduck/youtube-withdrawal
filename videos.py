@@ -20,17 +20,22 @@ class Video:
         self.maxPixels = resToPixels(resolution)
 
     def downloadVideos(self):
-        selectedStream = None
-        if self.__videoPixels(self.video.getbestvideo()) <= self.maxPixels:
-            selectedStream = self.video.getbestvideo()
-        else:
-            for stream in self.video.videostreams:
-                if self.__videoPixels(stream) >= self.maxPixels:
-                    selectedStream = stream
-                    break
+        print(self.__closestResolution())
 
-        selectedStream.download(filepath=self.videoFile.path())
+        self.__closestResolution().download(filepath=self.videoFile.path())
         self.video.getbestaudio().download(filepath=self.audioFile.path())
+
+    def __closestResolution(self):
+        smallestDelta = -1
+        closestStream = None
+
+        for stream in self.video.videostreams:
+            delta = abs(self.__videoPixels(stream) - self.maxPixels)
+            if smallestDelta == -1 or delta < smallestDelta:
+                closestStream = stream
+                smallestDelta = delta
+
+        return closestStream
 
     @classmethod
     def __videoPixels(cls, stream):
