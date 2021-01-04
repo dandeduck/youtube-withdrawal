@@ -1,32 +1,27 @@
 import pafy
 import moviepy.editor as mpe
 
+from util.Files import VideoFile, AudioFile
 
-class Video():
-    audioPath = ''
-    videoPath = ''
+
+class Video:
+    video = None
+    videoFile = None
+    audioFile = None
+    outputFile = None
 
     def __init__(self, videoId, cacheDir, outputDir):
-        self.videoId = videoId
+        self.video = pafy.new(videoId)
+        self.videoFile = VideoFile(cacheDir, self.video.title())
+        self.audioFile = AudioFile(cacheDir, self.video.title())
+        self.outputFile = VideoFile(outputDir, self.video.title())
 
-    def generateVideo(videoId, cacheDir, outputDir):
-        video = pafy.new(videoId)
-        cachePath = cacheDir + video.title()
-        audioExtension = '.mp3'
-        videoExtension = '.mp4'
-        outputPath = outputDir + video.title() + videoExtension
+    def downloadVideos(self):
+        self.video.getbestvideo().download(filepath=self.videoFile.path())
+        self.video.getbestaudio().download(filepath=self.audioFile.path())
 
-        downloadVideos(video, cachePath, audioExtension, videoExtension)
-        mergeClips(cachePath + videoExtension, cachePath + audioExtension, outputPath)
-
-    def downloadVideos(video, path, audioExtension, videoExtension):
-        video.getbestaudio().download(filepath=path + audioExtension)
-        video.getbestvideo().download(filepath=path + videoExtension)
-
-    def mergeClips(videoPath, audioPath, outputPath):
-        videoClip = mpe.VideoFileClip(videoPath)
-        audioClip = mpe.VideoFileClip(audioPath)
+    def mergeClips(self):
+        videoClip = mpe.VideoFileClip(self.videoFile.path())
+        audioClip = mpe.VideoFileClip(self.audioFile.path())
         mergedClip = videoClip.set_audio(audioClip)
-        mergedClip.write_videofile(outputPath)
-
-# if __name__ == '__main__':
+        mergedClip.write_videofile(self.outputFile.path())
