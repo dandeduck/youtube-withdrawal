@@ -14,15 +14,30 @@ class YoutubeApi:
     def __init__(self, clientSecretFile, scopes=None):
         if scopes is None:
             scopes = self.MIN_SCOPES
-        self.service = self.__get_authenticated_service(clientSecretFile, scopes)
+        self.service = self.__getAuthenticated_service(clientSecretFile, scopes)
 
     def search(self, **kwargs):
-        return self.search().list(kwargs).execute()
+        kwargs['part'] = 'snippet'
 
-    def channel(self, **kwargs):
-        return self.channel().list(kwargs).execute()
+        return self.service.search().list(**kwargs).execute()
 
-    def __get_authenticated_service(self, clientSecretFile, scopes):
+    def userSubscriptions(self, **kwargs):
+        kwargs['part'] = 'snippet'
+        kwargs['mine'] = 'true'
+
+        return self.service.subscriptions().list(**kwargs).execute()
+
+    def retrieveAllItems(self, apiFunc, **kwargs):
+        kwargs['maxResults'] = 50
+        result = apiFunc(**kwargs)
+
+        if 'nextPageToken' in result.keys():
+            kwargs['pageToken'] = result['nextPageToken']
+            return result['items'] + self.retrieveAllItems(apiFunc, **kwargs)
+
+        return result['items']
+
+    def __getAuthenticated_service(self, clientSecretFile, scopes):
         flow = InstalledAppFlow.from_client_secrets_file(clientSecretFile, scopes)
         credentials = flow.run_local_server()
 
