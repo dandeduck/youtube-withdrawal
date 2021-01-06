@@ -40,14 +40,14 @@ class Video:
 
         return self.video.getbestvideo()
 
-    def outputVideo(self):
+    def outputVideo(self):#check if file excists
         videoClip = mpe.VideoFileClip(self.videoFile.path())
         audioClip = mpe.AudioFileClip(self.audioFile.path())
         mergedClip = videoClip.set_audio(audioClip)
         mergedClip.write_videofile(self.outputFile.path(), fps=videoClip.fps)
 
 
-class VideoGenerator:
+class VideoCollection:
     settings = None
     videos = []
 
@@ -65,7 +65,4 @@ class VideoGenerator:
 
     def outputVideos(self):
         for video in self.videos:
-            try:
-                video.outputVideo()
-            except Exception as e:
-                continue #will be logged inthe future
+            video.outputVideo()
