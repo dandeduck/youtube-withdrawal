@@ -3,8 +3,8 @@ from datetime import datetime
 
 class DateTimeParser:
     @staticmethod
-    def fromRFC3339(rfcString): #1970-01-01T00:00:00Z
-        separated = rfcString.replace('Z','').split('T')
+    def fromRFC3339(rfcString):
+        separated = rfcString.replace('Z', '').split('T')
         date = separated[0].split('-')
         time = separated[1].split(':')
 

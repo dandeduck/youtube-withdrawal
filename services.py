@@ -54,8 +54,6 @@ class UploadChecker:
         self.api = youtubeApi
         self.playlistIds = [channelId.replace('C', 'U', 1) for channelId in channelIds.copy()]
 
-        print(self.playlistIds)
-
     def newVideoIds(self, lastCheckedDatetime):
         ids = []
 
