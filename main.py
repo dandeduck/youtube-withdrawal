@@ -1,11 +1,12 @@
-from services import YoutubeApi
+import services
+import datetime
 
 CLIENT_SECRETS_FILE = "C:\\Users\\duck\\Documents\\clientSecret.json"
 
 if __name__ == '__main__':
-    api = YoutubeApi(CLIENT_SECRETS_FILE)
-    print(api.userSubscriptions())
-    print(type(api.retrieveAllItems(api.userSubscriptions)[0]))
+    api = services.YoutubeApi(CLIENT_SECRETS_FILE)
+    checker = services.UploadChecker(api, ['UCXuqSBlHAE6Xw-yeJA0Tunw', 'UCtyjKSJa-3kMbCSjjOCLq2A'])
+    print(checker.newVideoIds(datetime.datetime(2021, 1, 1, 0, 0, 0, 0)))
     # print(api.search(q='2b2t')['items'])
 
 

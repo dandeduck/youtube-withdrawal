@@ -1,6 +1,9 @@
+import datetime
+
 from googleapiclient.discovery import build
 from google_auth_oauthlib.flow import InstalledAppFlow
 
+from util import DateTimeParser
 from videos import VideoCollection
 
 
@@ -45,24 +48,35 @@ class YoutubeApi:
 
 class UploadChecker:
     api = None
-    channelIds = []
+    playlistIds = []
 
     def __init__(self, youtubeApi, channelIds):
         self.api = youtubeApi
-        self.channelIds = channelIds
+        self.playlistIds = [channelId.replace('C', 'U', 1) for channelId in channelIds.copy()]
 
-    def newVideoIds(self, lastCheckedTimestamp): #1970-01-01T00:00:00Z
+        print(self.playlistIds)
+
+    def newVideoIds(self, lastCheckedDatetime):
         ids = []
 
-        for channelId in self.channelIds:
-            ids += self.__newVideoIdsFromChannel(channelId, lastCheckedTimestamp)
+        for playlistId in self.playlistIds:
+            ids += self.__newVideoIdsFromChannel(playlistId, lastCheckedDatetime)
 
         return ids
 
-    def __newVideoIdsFromChannel(self, channelId, lastCheckedTimestamp):
-        return [item['id']['videoId'] for item in
-                self.api.search(part='snippet', channelId=channelId, publishedAfter=lastCheckedTimestamp, type='video',
-                                maxResults=50)['items']]
+    def __newVideoIdsFromChannel(self, playlistId, lastCheckedDatetime):
+        contentDetails = [item['contentDetails'] for item in self.api.playlistItems(part='contentDetails', playlistId=playlistId)['items']]
+        newVideoIds = []
+
+        for detail in contentDetails:
+            publishTime = DateTimeParser.fromRFC3339(detail['videoPublishedAt'])
+
+            if publishTime > lastCheckedDatetime:
+                newVideoIds.append(detail['videoId'])
+            else:
+                break
+
+        return newVideoIds
 
 
 class NewVideoCollectionFactory:
@@ -73,5 +87,5 @@ class NewVideoCollectionFactory:
         self.settings = settings
         self.uploadChecker = uploadChecker
 
-    def createNewVideoCollection(self, lastCheckedTimestamp):
-        return VideoCollection(self.settings, self.uploadChecker.newVideoIds(lastCheckedTimestamp))
+    def createNewVideoCollection(self, lastCheckedDatetime):
+        return VideoCollection(self.settings, self.uploadChecker.newVideoIds(lastCheckedDatetime))
