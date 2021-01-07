@@ -16,14 +16,13 @@ class YoutubeApi:
             scopes = self.MIN_SCOPES
         self.service = self.__getAuthenticated_service(clientSecretFile, scopes)
 
-    def search(self, **kwargs):
-        kwargs['part'] = 'snippet'
+    def playlistItems(self, **kwargs):
+        kwargs['maxResults'] = 50
 
-        return self.service.search().list(**kwargs).execute()
+        return self.service.playlistItems().list(**kwargs).execute()
 
-    def userSubscriptions(self, **kwargs):
-        kwargs['part'] = 'snippet'
-        kwargs['mine'] = 'true'
+    def subscriptions(self, **kwargs):
+        kwargs['maxResults'] = 50
 
         return self.service.subscriptions().list(**kwargs).execute()
 
