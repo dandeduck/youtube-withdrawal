@@ -1,5 +1,5 @@
 import pafy
-import moviepy.editor as mpe
+import ffmpeg
 
 from files import VideoFile, AudioFile
 
@@ -29,9 +29,15 @@ class Video:
         self.outputFile = VideoFile(settings.outputDir, self.video.title)
         self.resolution = settings.resolution
 
-    def downloadVideos(self):
+    def downloadFiles(self):
         self.__closestResolutionStream().download(filepath=self.videoFile.path())
         self.video.getbestaudio().download(filepath=self.audioFile.path())
+
+    def outputVideo(self):
+        if not self.__fileExists(self.outputFile.path()):
+            video = ffmpeg.input(self.videoFile.path()).video
+            audio = ffmpeg.input(self.audioFile.path()).audio
+            ffmpeg.concat(video, audio, v=1, a=1).output(self.outputFile.path()).run()
 
     def __closestResolutionStream(self):
         for stream in self.video.videostreams:
@@ -40,11 +46,14 @@ class Video:
 
         return self.video.getbestvideo()
 
-    def outputVideo(self):#check if file excists
-        videoClip = mpe.VideoFileClip(self.videoFile.path())
-        audioClip = mpe.AudioFileClip(self.audioFile.path())
-        mergedClip = videoClip.set_audio(audioClip)
-        mergedClip.write_videofile(self.outputFile.path(), fps=videoClip.fps)
+    def __fileExists(self, filePath):
+        try:
+            file = open(filePath)
+            file.close()
+            return True
+        except IOError:
+            return False
+
 
 
 class VideoCollection:
@@ -61,7 +70,7 @@ class VideoCollection:
 
     def downloadVideos(self):
         for video in self.videos:
-            video.downloadVideos()
+            video.download()
 
     def outputVideos(self):
         for video in self.videos:

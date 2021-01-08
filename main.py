@@ -1,11 +1,14 @@
 import services
 import datetime
 
-from storage import DataBase
+from videos import Video, VideoSettings
 
 CLIENT_SECRETS_FILE = "C:\\Users\\duck\\Documents\\clientSecret.json"
 
 if __name__ == '__main__':
+    video = Video('https://www.youtube.com/watch?v=LrKIIkUzNTE', VideoSettings('C:\\Users\\duck\\Documents\\test\\', 'C:\\Users\\duck\\Documents\\test\\output\\', '1080p'))
+    video.downloadFiles()
+    video.outputVideo()
     # api = services.YoutubeApi(CLIENT_SECRETS_FILE)
     # checker = services.UploadChecker(api, ['UCXuqSBlHAE6Xw-yeJA0Tunw', 'UCtyjKSJa-3kMbCSjjOCLq2A'])
     # print(checker.newVideoIds(datetime.datetime(2021, 1, 1, 0, 0, 0, 0)))
