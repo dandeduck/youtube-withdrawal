@@ -1,0 +1,6 @@
+pafy
+youtube-dl
+moviepy
+numpy==1.19.3
+google-api-python-client
+ffmpeg-python
